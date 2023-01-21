@@ -20,7 +20,8 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("strong.csv")
 
 cleaned = df[["Date", "Workout Name", "Duration", "Exercise Name", "Set Order", "Weight", "Reps"]]
-
+cleaned['Date'] = pd.to_datetime(cleaned['Date']).dt.strftime('%Y-%m-%d')
+ # Remove time
 
 def get_date_range(data_frame, start_date, end_date):
     """ Slices a dataframe between a start date and end date"""
@@ -54,7 +55,8 @@ def one_rep_max_row(row):
     """
     weight = row['Weight']
     reps = row['Reps']
-    return round(weight * (36/(37 - reps)))
+    date = row['Date']
+    return (round(weight * (36/(37 - reps))), date)
 
 
 def one_rep_max_exercise(dataframe, exercise):
@@ -62,14 +64,31 @@ def one_rep_max_exercise(dataframe, exercise):
     with the exercise name 'exercise', and then returns a list of the result.
     """ 
     squat_rows = dataframe.loc[df['Exercise Name'] == exercise]
-    max =  squat_rows[['Weight', 'Reps']].apply(one_rep_max_row, axis=1)
+    max =  squat_rows[['Weight', 'Reps', 'Date']].apply(one_rep_max_row, axis=1)
     return list(max)
+
+
+def plot_max(date_weight_tuples, exercise):
+    """Creates a scatter plot of the calculated one rep max
+        vs the dates.
+         """
+    dates = [date[1] for date in date_weight_tuples]
+    maxes = [max[0] for max in date_weight_tuples]
+    plt.plot_date(dates, maxes)
+    plt.title(f'Calculated 1-RM for {exercise}')
+    plt.xlabel('Date')
+    plt.ylabel('Weight [kg]')
+    plt.gcf().autofmt_xdate()
+    plt.show()
+
 
 def main():
     workouts_between_dates(cleaned, '2022-08-01', '2023-01-15')
     number_of_exercises(cleaned, '2022-078-01', '2023-01-15')
     print(cleaned.head())
-    print(one_rep_max_exercise(cleaned, "Squat (Barbell)"))
+    exercise = "Squat (Barbell)"
+    max_list = (one_rep_max_exercise(cleaned, exercise))
+    plot_max(max_list, exercise)
     
 if __name__ == "__main__":
     main()
