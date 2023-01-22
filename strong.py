@@ -2,16 +2,6 @@
 
 """ Program for visualizing training data from Strong using Streamlit"""
 
-""" Ideas for analysis:
-1. Total number of workouts (between dates).
-2. Number of different exercises (between dates).
-3. Plot the calculated 1RM for different exercises over time.
-4. Calculate the (average) total volume for different training days
-5. Perform linear regession for the 1RM and predict future values.
-6. 
-
- """
-
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -46,7 +36,6 @@ def number_of_exercises(data_frame, start_date, end_date):
     date_range = get_date_range(data_frame, start_date, end_date)
     unique_exercises = date_range['Exercise Name'].nunique()
     print(f'During this period, you have performed {unique_exercises} different exercises!')
-
 
 
 def one_rep_max_row(row):
@@ -88,13 +77,24 @@ def plot_max(date_weight_tuples, exercise):
     plt.show()
 
 
+def exercise_format(dataframe):
+    """ Formats the available exercises and prints it for selection"""
+    exercise_list = list(dataframe['Exercise Name'].unique())
+    print(f"---------- The full list of available exercises: -------")
+    for i in range(len(exercise_list)):
+        print(f"{exercise_list[i]}")
+    #print(exercise_list)
+
+
 def main():
     workouts_between_dates(cleaned, '2022-08-01', '2023-01-15')
-    number_of_exercises(cleaned, '2022-078-01', '2023-01-15')
-    print(cleaned.head())
-    exercise = "Squat (Barbell)"
+    number_of_exercises(cleaned, '2022-08-01', '2023-01-15')
+    exercise_format(cleaned)
+    exercise = input("Choose an exercise to view: ")
     max_list = (one_rep_max_exercise(cleaned, exercise))
     plot_max(max_list, exercise)
     
+
+
 if __name__ == "__main__":
     main()
