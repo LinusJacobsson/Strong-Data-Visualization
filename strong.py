@@ -26,8 +26,7 @@ def workouts_between_dates(data_frame, start_date, end_date):
     """
     date_range = get_date_range(data_frame, start_date, end_date)
     unique_dates = date_range['Date'].nunique()
-    print(f'During this period, you have completed {unique_dates} workouts!')
-
+    return unique_dates
 
 def number_of_exercises(data_frame, start_date, end_date):
     """ Takes a dataframe and two dates and prints the number
@@ -35,7 +34,7 @@ def number_of_exercises(data_frame, start_date, end_date):
     """
     date_range = get_date_range(data_frame, start_date, end_date)
     unique_exercises = date_range['Exercise Name'].nunique()
-    print(f'During this period, you have performed {unique_exercises} different exercises!')
+    return unique_exercises
 
 
 def one_rep_max_row(row):
