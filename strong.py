@@ -12,8 +12,8 @@ import matplotlib.dates as plt_date
 df = pd.read_csv("strong.csv")
 
 cleaned = df[["Date", "Workout Name", "Duration", "Exercise Name", "Set Order", "Weight", "Reps"]]
-cleaned['Date'] = pd.to_datetime(cleaned['Date']).dt.strftime('%Y-%m-%d')
- # Remove time
+cleaned['Date'] = pd.to_datetime(cleaned['Date']).dt.strftime('%Y-%m-%d') # Fixes time format
+cleaned['category'] = df['Exercise Name'].str.extract(r'\((.*)\)', expand=False).fillna("Other")
 
 def get_date_range(data_frame, start_date, end_date):
     """ Slices a dataframe between a start date and end date"""
@@ -76,24 +76,35 @@ def plot_max(date_weight_tuples, exercise):
     plt.show()
 
 
-def exercise_format(dataframe):
+def get_exercises(dataframe):
     """ Formats the available exercises and prints it for selection"""
     exercise_list = list(dataframe['Exercise Name'].unique())
-    print(f"---------- The full list of available exercises: -------")
-    for i in range(len(exercise_list)):
-        print(f"{exercise_list[i]}")
-    #print(exercise_list)
+    return exercise_list
 
+
+def get_volume(row):
+    """ Returns the product of weight, reps, sets, and exercises for a 
+        time frame
+    """
+    weight = row['Weight']
+    reps = row['Reps']
+    return weight * reps
+
+
+def total_volume(dataframe):
+    """Returns the total volume for all exercises in a dataframe"""
+    product =  dataframe[['Weight', 'Reps']].apply(get_volume, axis=1)
+    return product
 
 def main():
     workouts_between_dates(cleaned, '2022-08-01', '2023-01-15')
     number_of_exercises(cleaned, '2022-08-01', '2023-01-15')
-    exercise_format(cleaned)
-    exercise = input("Choose an exercise to view: ")
-    max_list = (one_rep_max_exercise(cleaned, exercise))
-    plot_max(max_list, exercise)
-    
-
+    print(cleaned.head())
+    print(total_volume(cleaned))
+    volume = total_volume(cleaned)
+    total_vol = sum(volume)
+    print(f'Total volume: {total_vol/1000:.1f}')
+    print(cleaned)
 
 if __name__ == "__main__":
     main()
