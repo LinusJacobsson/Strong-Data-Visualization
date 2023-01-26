@@ -3,6 +3,7 @@ import pandas as pd
 import strong
 from PIL import Image
 import matplotlib.pyplot as plt
+import plost
 
 st.set_page_config(layout='wide', initial_sidebar_state='expanded')
 
@@ -33,6 +34,28 @@ col3.metric("Total volume", str(round(sum(sum_volume)))+ " kg")
 st.markdown('One rep max progression')
 exercise = st.selectbox('Select exercise', strong.get_exercises(strong.cleaned))
 st.write('You chose: ', exercise)
+
+
+st.markdown('Distribution of exercises')
+category_counts = strong.cleaned['category'].value_counts().reset_index()
+category_counts.columns = ['category', 'count']
+print(category_counts)
+#labels = strong.cleaned['category'].unique()
+#values = strong.cleaned['category'].value_counts().tolist()
+c1, c2 = st.columns((7,3))
+with c1:
+    plost.donut_chart(
+        data= category_counts,
+        theta= 'count',
+        color= 'category',
+        legend='bottom', 
+        use_container_width=True)
+    """fig, ax = plt.subplots()
+    ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')
+
+    st.pyplot(fig)"""
+
 
 plot_data = st.sidebar.multiselect('Select data', ['temp_min', 'temp_max'], ['temp_min', 'temp_max'])
 plot_height = st.sidebar.slider('Specify plot height', 200, 500, 250)
