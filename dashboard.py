@@ -44,14 +44,21 @@ category_counts.columns = ['category', 'count']
 print(category_counts)
 #labels = strong.cleaned['category'].unique()
 #values = strong.cleaned['category'].value_counts().tolist()
-data = strong.one_rep_max_exercise(strong.cleaned, "Squat (Barbell)")
+first_set = strong.cleaned[strong.cleaned['Set Order'] == 1]
+second_set = strong.cleaned[strong.cleaned['Set Order'] == 2]
+data_first_set = strong.one_rep_max_exercise(first_set, "Bicep Curl (Cable)")
+data_second_set = strong.one_rep_max_exercise(second_set, "Bicep Curl (Cable)")
 c1, c2 = st.columns((6,4))
 with c1:
-    y = [item[0] for item in data]
-    x = [item[1] for item in data]
+    y1 = [item[0] for item in data_first_set]
+    x1 = [item[1] for item in data_first_set]
+    y2 = [item[0] for item in data_second_set]
+    x2 = [item[1] for item in data_second_set]
     fig, ax = plt.subplots()
-    ax.plot(x, y, linestyle ='--')
-    ax.set_xticklabels(x, rotation=45)
+    ax.plot(x1, y1, linestyle = '--', color = "blue")
+    ax.plot(x2, y2, linestyle = '--', color = "red")
+    ax.set_xticklabels(x1, rotation=45)
+    ax.legend(['First Set', 'Second Set'])
 
     st.pyplot(fig)
 with c2:
@@ -59,13 +66,11 @@ with c2:
         data= category_counts,
         theta= 'count',
         color= 'category',
-        legend='bottom', 
-        use_container_width=True)
-    """fig, ax = plt.subplots()
-    ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=90)
-    ax.axis('equal')
+        legend='top', 
+        use_container_width=True,
+        height = 350,
+        title = "Exercise categories")
 
-    st.pyplot(fig)"""
 
 
 plot_data = st.sidebar.multiselect('Select data', ['temp_min', 'temp_max'], ['temp_min', 'temp_max'])
