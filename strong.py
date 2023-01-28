@@ -110,6 +110,16 @@ def workouts_per_week(dataframe):
     week_counts = unique_dates.value_counts()
     return week_counts
 
+def get_weekly_workouts(dataframe):
+    new_df = dataframe
+    new_df['Date'] = pd.to_datetime(new_df['Date'])
+    new_df['week_start'] = new_df['Date'].dt.to_period('W').dt.start_time
+    new_df = new_df.drop_duplicates(subset = 'Date') # Drops the duplicate dates
+    new_df['week_start'] = new_df['week_start'].dt.strftime('%Y-%m-%d')
+    #new_df.set_index('week_start')
+    series = new_df['week_start'].value_counts().sort_index() # Sorts by the dates
+    return series
+
 first_set = cleaned[cleaned['Set Order'] == 1]
 second_set = cleaned[cleaned['Set Order'] == 2]
 
@@ -125,8 +135,7 @@ def main():
     #print(f'Total volume: {total_vol/1000:.1f}')
     #print(cleaned)
     #print(one_rep_max_exercise(cleaned, "Squat (Barbell)"))
-
     #print(cleaned)
-    print(workouts_per_week(cleaned))
+    print(get_weekly_workouts(cleaned))
 if __name__ == "__main__":
     main()

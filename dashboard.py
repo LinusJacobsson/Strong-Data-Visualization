@@ -71,6 +71,19 @@ with c2:
         height = 350,
         title = "Exercise categories")
 
+week_counts = strong.get_weekly_workouts(strong.cleaned)
+
+
+fig, ax = plt.subplots()
+ax.bar(week_counts.index, week_counts.values)
+ax.set_xlabel('Start of week')
+ax.set_ylabel('Number of workouts')
+ax.set_yticks([0, 1, 2, 3, 4, 5, 6])
+ax.set_xticks(week_counts.index)
+ax.set_xticklabels(week_counts.index, rotation=45, fontsize = 5)
+
+st.pyplot(fig)
+
 
 
 plot_data = st.sidebar.multiselect('Select data', ['temp_min', 'temp_max'], ['temp_min', 'temp_max'])
