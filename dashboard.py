@@ -38,12 +38,23 @@ st.write('You chose: ', exercise)
 
 st.markdown('Distribution of exercises')
 category_counts = strong.cleaned['category'].value_counts().reset_index()
+category_counts['category'] = category_counts['category'].replace({'machine': 'Machine', 'Smith Machine': 'Machine'})
+
 category_counts.columns = ['category', 'count']
 print(category_counts)
 #labels = strong.cleaned['category'].unique()
 #values = strong.cleaned['category'].value_counts().tolist()
-c1, c2 = st.columns((7,3))
+data = strong.one_rep_max_exercise(strong.cleaned, "Squat (Barbell)")
+c1, c2 = st.columns((6,4))
 with c1:
+    y = [item[0] for item in data]
+    x = [item[1] for item in data]
+    fig, ax = plt.subplots()
+    ax.plot(x, y, linestyle ='--')
+    ax.set_xticklabels(x, rotation=45)
+
+    st.pyplot(fig)
+with c2:
     plost.donut_chart(
         data= category_counts,
         theta= 'count',
