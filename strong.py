@@ -1,9 +1,8 @@
 
 
-""" Program for visualizing training data from Strong using Streamlit"""
+""" Module with useful function for analysis of strong data"""
 
 import pandas as pd
-#import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.dates as plt_date
@@ -54,12 +53,13 @@ def one_rep_max_row(row):
     return (round(weight * (36/(37 - reps))), date)
 
 
-def one_rep_max_exercise(dataframe, exercise):
+def one_rep_max_exercise(dataframe, exercise, start_date, end_date):
     """ Applies the one_rep_max_row function to every row in a dataframe
         with the exercise name 'exercise', and then returns a list of the result.
     """ 
-    df_exercise = dataframe[dataframe['Exercise Name'] == exercise]
-    print(df_exercise)
+    df_exercise = get_date_range(dataframe, start_date, end_date)
+    df_exercise = df_exercise[df_exercise['Exercise Name'] == exercise]
+    
     max =  df_exercise[['Weight', 'Reps', 'Date']].apply(one_rep_max_row, axis=1)
     return list(max)
 
@@ -103,15 +103,8 @@ def total_volume(dataframe):
     return product
 
 
-def workouts_per_week(dataframe):
-    unique_dates = dataframe["Date"].drop_duplicates()
-    unique_dates = pd.to_datetime(unique_dates)
-    unique_dates = unique_dates.dt.week
-    week_counts = unique_dates.value_counts()
-    return week_counts
-
-def get_weekly_workouts(dataframe):
-    new_df = dataframe
+def get_weekly_workouts(dataframe, start_date, end_date):
+    new_df = get_date_range(dataframe, start_date, end_date)
     new_df['Date'] = pd.to_datetime(new_df['Date'])
     new_df['week_start'] = new_df['Date'].dt.to_period('W').dt.start_time
     new_df = new_df.drop_duplicates(subset = 'Date') # Drops the duplicate dates
@@ -120,22 +113,4 @@ def get_weekly_workouts(dataframe):
     series = new_df['week_start'].value_counts().sort_index() # Sorts by the dates
     return series
 
-first_set = cleaned[cleaned['Set Order'] == 1]
-second_set = cleaned[cleaned['Set Order'] == 2]
-
-
-
-def main():
-    workouts_between_dates(cleaned, '2022-08-01', '2023-01-15')
-    number_of_exercises(cleaned, '2022-08-01', '2023-01-15')
-    #print(cleaned.head())
-    #print(total_volume(cleaned))
-    #volume = total_volume(cleaned)
-    #total_vol = sum(volume)
-    #print(f'Total volume: {total_vol/1000:.1f}')
-    #print(cleaned)
-    #print(one_rep_max_exercise(cleaned, "Squat (Barbell)"))
-    #print(cleaned)
-    print(get_weekly_workouts(cleaned))
-if __name__ == "__main__":
-    main()
+print(cleaned)
